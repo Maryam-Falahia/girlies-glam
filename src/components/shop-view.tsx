@@ -6,7 +6,6 @@ import { useMemo, useState } from "react";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
-import { clothingCategories, jewelryCategories } from "@/lib/constants";
 import { useStore } from "@/lib/store";
 
 export function ShopView() {
@@ -38,14 +37,7 @@ function ShopCatalog({ initial }: { initial: string }) {
   };
 
   return (
-    <div className="gg-container gg-section gg-shop-layout">
-      <aside className="gg-shop-aside">
-        <div className="gg-filter-title">Category</div>
-        <button className={`gg-filter-item ${category === "All" ? "active" : ""}`} onClick={() => setCategory("All")}>All Items</button>
-        {clothingCategories.map((item) => <button key={item} className={`gg-filter-item ${category === item ? "active" : ""}`} onClick={() => setCategory(item)}>{item}</button>)}
-        <div className="gg-filter-title" style={{ marginTop: 22 }}>Jewellery</div>
-        {jewelryCategories.map((item) => <button key={item} className={`gg-filter-item ${category === item ? "active" : ""}`} onClick={() => setCategory(item)}>{item}</button>)}
-      </aside>
+    <div className="gg-container gg-section">
       <div>
         <div className="gg-section-head" style={{ marginBottom: 20 }}>
           <div>

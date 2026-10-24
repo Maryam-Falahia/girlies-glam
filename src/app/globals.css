@@ -229,8 +229,8 @@ button { cursor: pointer; font-family: inherit; }
   background: rgba(255,250,243,0.9);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-  padding: 14px 32px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 12px;
+  padding: 10px 24px;
 }
 :root[data-theme="dark"] #gg-nav,
 :root[data-theme="auto"] #gg-nav {
@@ -260,7 +260,22 @@ button { cursor: pointer; font-family: inherit; }
   content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 2px;
   background: var(--pink); border-radius: 2px;
 }
-.gg-nav-icons { display: flex; align-items: center; gap: 16px; }
+.gg-nav-brand { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.gg-nav-icons { display: flex; align-items: center; gap: 8px; margin-inline-start: auto; }
+#gg-nav .gg-menu-toggle { display: inline-flex; }
+.gg-body { display: flex; align-items: stretch; flex: 1; position: relative; z-index: 1; min-width: 0; }
+.gg-main { flex: 1; min-width: 0; }
+.gg-side-nav { display: flex; flex-direction: column; }
+.gg-side-title { margin-top: 18px; }
+.gg-side-admin { margin-top: 16px; font-weight: 700; color: var(--pink-deep); }
+.gg-side-layer { position: fixed; inset: 0; z-index: 55; }
+.gg-side-overlay { position: absolute; inset: 0; border: 0; background: rgba(74, 25, 66, 0.35); }
+.gg-side-drawer {
+  position: absolute; top: 0; inset-inline-start: 0; height: 100%; width: min(280px, 86vw);
+  background: var(--surface); padding: 16px 16px 28px; overflow: auto;
+  box-shadow: 12px 0 40px rgba(0, 0, 0, 0.15);
+}
+.gg-side-drawer-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .gg-icon-btn {
   position: relative; display: flex; align-items: center; justify-content: center;
   width: 38px; height: 38px; border-radius: 50%; background: transparent; border: none;
@@ -633,7 +648,7 @@ button { cursor: pointer; font-family: inherit; }
 /* ─── PRINT (Order Bill) ─── */
 @media print {
   @page { margin: 14mm; }
-  #gg-nav, footer, .gg-print-hide { display: none !important; }
+  #gg-nav, footer, .gg-print-hide, .gg-side-layer { display: none !important; }
   body, #app { background: #fff !important; }
   .gg-section { padding: 0 !important; }
   .gg-print-area {

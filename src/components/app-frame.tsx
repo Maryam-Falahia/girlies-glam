@@ -1,14 +1,13 @@
 "use client";
 
-import { Eye, EyeOff, Heart, Lock, Minus, Plus, Search, ShoppingBag, Sparkles, Trash2, User as UserIcon, X } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { Eye, EyeOff, Heart, Lock, Menu, Minus, Plus, Search, ShoppingBag, Sparkles, Trash2, User as UserIcon, X } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState, type FormEvent } from "react";
 import { BackgroundCanvas } from "@/components/background-canvas";
 import { BrandMark } from "@/components/brand-mark";
 import { ProductImage } from "@/components/product-card";
 import { WhatsAppSupport } from "@/components/store-features";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sheet } from "@/components/ui/sheet";
@@ -139,6 +138,28 @@ function CartSheet() {
   );
 }
 
+function BrowseLinks({ category, onNavigate, closeMenu, isAdmin, page }: { category: string | null; onNavigate: (category?: string) => void; closeMenu: () => void; isAdmin: boolean; page: string }) {
+  const { t } = usePreferences();
+  const router = useRouter();
+  const shopAll = page === "shop" && (!category || category === "All");
+  const go = (href: string) => { closeMenu(); router.push(href); };
+  return (
+    <nav className="gg-side-nav" aria-label="Store categories">
+      <button className={`gg-filter-item ${page === "home" ? "active" : ""}`} onClick={() => go("/")}>{t("nav.home")}</button>
+      <button className={`gg-filter-item ${shopAll ? "active" : ""}`} onClick={() => onNavigate()}>{t("nav.shop")}</button>
+      {clothingCategories.map((item) => <button key={item} className={`gg-filter-item ${page === "shop" && category === item ? "active" : ""}`} onClick={() => onNavigate(item)}>{item}</button>)}
+      <div className="gg-filter-title gg-side-title">{t("nav.jewellery")}</div>
+      {jewelryCategories.map((item) => <button key={item} className={`gg-filter-item ${page === "shop" && category === item ? "active" : ""}`} onClick={() => onNavigate(item)}>{item}</button>)}
+      {isAdmin && <button className={`gg-filter-item gg-side-admin ${page === "admin" ? "active" : ""}`} onClick={() => go("/admin")}>{t("nav.admin")}</button>}
+    </nav>
+  );
+}
+
+function BrowseSidebar({ onNavigate, closeMenu, isAdmin, page }: { onNavigate: (category?: string) => void; closeMenu: () => void; isAdmin: boolean; page: string }) {
+  const category = useSearchParams().get("category");
+  return <BrowseLinks category={category} onNavigate={onNavigate} closeMenu={closeMenu} isAdmin={isAdmin} page={page} />;
+}
+
 export function AppFrame({ children }: { children: React.ReactNode }) {
   const { ready, user, guest, cart, wishlist, logout, setCartOpen, toast } = useStore();
   const { t } = usePreferences();
@@ -146,8 +167,10 @@ export function AppFrame({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const page = pathname === "/" ? "home" : pathname.split("/")[1];
   const count = cart.reduce((sum, line) => sum + line.qty, 0);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const goShop = (category?: string) => {
+    setMenuOpen(false);
     router.push(category ? `/shop?category=${encodeURIComponent(category)}` : "/shop");
     window.scrollTo(0, 0);
   };
@@ -162,18 +185,9 @@ export function AppFrame({ children }: { children: React.ReactNode }) {
       {ready && !showStore && <AuthScreen />}
       <div id="app" style={{ minHeight: "100vh", display: showStore ? "flex" : "none", flexDirection: "column" }}>
         <nav id="gg-nav">
-          <button type="button" onClick={() => router.push("/")} aria-label="Girlies Glam home"><BrandMark variant="nav" /></button>
-          <div className="gg-nav-links">
-            <button className={`gg-nav-link ${page === "home" ? "active" : ""}`} onClick={() => router.push("/")}>{t("nav.home")}</button>
-            <button className={`gg-nav-link ${page === "shop" ? "active" : ""}`} onClick={() => goShop()}>{t("nav.shop")}</button>
-            {clothingCategories.map((category) => <button key={category} className="gg-nav-link" onClick={() => goShop(category)}>{category}</button>)}
-            <DropdownMenu>
-              <DropdownMenuTrigger className="gg-nav-link">{t("nav.jewellery")} ▾</DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {jewelryCategories.map((category) => <DropdownMenuItem key={category} onSelect={() => goShop(category)}>{category}</DropdownMenuItem>)}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            {browsing.isAdmin && <button className={`gg-nav-link ${page === "admin" ? "active" : ""}`} style={{ fontWeight: 700, color: "var(--pink-deep)" }} onClick={() => router.push("/admin")}>{t("nav.admin")}</button>}
+          <div className="gg-nav-brand">
+            <Button variant="icon" className="gg-menu-toggle" title="Menu" onClick={() => setMenuOpen(true)} aria-label="Open menu"><Menu size={19} /></Button>
+            <button type="button" onClick={() => router.push("/")} aria-label="Girlies Glam home"><BrandMark variant="nav" /></button>
           </div>
           <div className="gg-nav-icons">
             <Button variant="icon" title={t("nav.search")} onClick={() => goShop()}><Search size={19} /></Button>
@@ -182,7 +196,23 @@ export function AppFrame({ children }: { children: React.ReactNode }) {
             <Button variant="icon" title={browsing.name} onClick={() => user ? router.push("/account") : window.alert("Sign in to open your account and manage favorites.")}><UserIcon size={19} /></Button>
           </div>
         </nav>
-        <div style={{ flex: 1, position: "relative", zIndex: 1 }}>{children}</div>
+        <div className="gg-body">
+          <div className="gg-main">{children}</div>
+        </div>
+        {menuOpen && (
+          <div className="gg-side-layer">
+            <button type="button" className="gg-side-overlay" aria-label="Close menu" onClick={() => setMenuOpen(false)} />
+            <div className="gg-side-drawer" role="dialog" aria-label="Store categories">
+              <div className="gg-side-drawer-head">
+                <BrandMark variant="nav" />
+                <Button variant="icon" onClick={() => setMenuOpen(false)} aria-label="Close menu"><X size={18} /></Button>
+              </div>
+              <Suspense fallback={<BrowseLinks category={null} onNavigate={goShop} closeMenu={() => setMenuOpen(false)} isAdmin={browsing.isAdmin} page={page} />}>
+                <BrowseSidebar onNavigate={goShop} closeMenu={() => setMenuOpen(false)} isAdmin={browsing.isAdmin} page={page} />
+              </Suspense>
+            </div>
+          </div>
+        )}
         <footer id="gg-footer">
           <div className="gg-footer-grid gg-container">
             <div>
