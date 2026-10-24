@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
-import { categoryEmoji, clothingCategories, jewelryCategories } from "@/lib/constants";
+import { clothingCategories, jewelryCategories } from "@/lib/constants";
 import { useStore } from "@/lib/store";
 
 export function ShopView() {
@@ -44,7 +44,7 @@ function ShopCatalog({ initial }: { initial: string }) {
         <button className={`gg-filter-item ${category === "All" ? "active" : ""}`} onClick={() => setCategory("All")}>All Items</button>
         {clothingCategories.map((item) => <button key={item} className={`gg-filter-item ${category === item ? "active" : ""}`} onClick={() => setCategory(item)}>{item}</button>)}
         <div className="gg-filter-title" style={{ marginTop: 22 }}>Jewellery</div>
-        {jewelryCategories.map((item) => <button key={item} className={`gg-filter-item ${category === item ? "active" : ""}`} onClick={() => setCategory(item)}>{categoryEmoji[item]} {item}</button>)}
+        {jewelryCategories.map((item) => <button key={item} className={`gg-filter-item ${category === item ? "active" : ""}`} onClick={() => setCategory(item)}>{item}</button>)}
       </aside>
       <div>
         <div className="gg-section-head" style={{ marginBottom: 20 }}>

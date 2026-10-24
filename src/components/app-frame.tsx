@@ -12,7 +12,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sheet } from "@/components/ui/sheet";
-import { categories, categoryEmoji, clothingCategories, jewelryCategories } from "@/lib/constants";
+import { categories, clothingCategories, jewelryCategories } from "@/lib/constants";
 import { usePreferences } from "@/lib/preferences";
 import { useStore } from "@/lib/store";
 import { money } from "@/lib/utils";
@@ -170,7 +170,7 @@ export function AppFrame({ children }: { children: React.ReactNode }) {
             <DropdownMenu>
               <DropdownMenuTrigger className="gg-nav-link">{t("nav.jewellery")} ▾</DropdownMenuTrigger>
               <DropdownMenuContent>
-                {jewelryCategories.map((category) => <DropdownMenuItem key={category} onSelect={() => goShop(category)}>{categoryEmoji[category]} {category}</DropdownMenuItem>)}
+                {jewelryCategories.map((category) => <DropdownMenuItem key={category} onSelect={() => goShop(category)}>{category}</DropdownMenuItem>)}
               </DropdownMenuContent>
             </DropdownMenu>
             {browsing.isAdmin && <button className={`gg-nav-link ${page === "admin" ? "active" : ""}`} style={{ fontWeight: 700, color: "var(--pink-deep)" }} onClick={() => router.push("/admin")}>{t("nav.admin")}</button>}
